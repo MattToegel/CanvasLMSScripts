@@ -9,31 +9,35 @@ Any external links are copied and any internal links are ignored (since an exter
 Optionally, you can attempt to print the page as a PDF for easier sharing.
 */
 
-//find the module element assuming you named it "Module #" otherwise edit the label accordingly or adjust the selector
-let eles = document.querySelectorAll(".context_module[aria-label*='Module '");
-let html = "";
-for (let el of eles) {
-    //use the label as the summary
-    html += `<details open> <summary>${el.ariaLabel}</summary>`;
-    //generate ordered list
-    html += `<ol>`;
-    //find the active links
-    let links = el.querySelectorAll(".module-item-title a");
-    for (let link of links) {
-        //capture only publish links (if you want all, remove this if condition)
-        if (link.closest(".ig-row").classList.contains("ig-published")) {
-
-            html += `<li>${link.title} - `;
-            //ignore canvas links
-            if (link.href.includes("instructure.com")) {
-                html += "[internal canvas assignent]";
+const exportModules = () => {
+    //find the Canvas Modules that contain the content list
+    let eles = document.querySelectorAll(".context_module");
+    //console.log("eles count: ", eles.length);
+    let html = "";
+    for (let el of eles) {
+        // grabs only the links
+        let links = el.querySelectorAll(".module-item-title a");
+        //console.log(el);
+        html += `<h5>${el.ariaLabel}</h5>`;
+        html += "<ol>";
+        for (let link of links) {
+            //only retrieve published items
+            if (link.closest(".ig-row").classList.contains("ig-published")) {
+                console.log(link.title, link.href);
+                html += `<li>${link.title} - `;
+                //ignore canvas links
+                if (link.href.includes("instructure.com")) {
+                    html += "[internal canvas assignent]";
+                } else { //generate a link for external items
+                    html += `<a href="${link.href}">link<a>`;
+                }
+                html += "</li>";
             }
-            else {//generate a link for external items
-                html += `<a href="${link.href}">link<a>`;
-            }
-            html += "</li>";
         }
+        html += "</ol><br>";
+        // console.log(el.querySelectorAll(".module-item-title a"));
     }
-    html += "</ol></details>";
-}
-console.log(html);//<-- this will be copyable (Chrome had a nice link/button to click to copy it) 
+
+    console.log(html);//<-- this will be copyable (Chrome had a nice link/button to click to copy it) 
+};
+exportModules();
